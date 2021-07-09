@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<!--
+  CUI - A component-based C++ UI library
+
+  Copyright (C) 2020-2021 Denis Blank <denis.blank at outlook dot com>
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>CUI</title>
+  <style>
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    canvas {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+  </style>
+</head>
+
+<body>
+  <canvas id='application'></canvas>
+  <script>
+    let memory = null;
+
+    class Vec2 {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+
+      write(offset) {
+        const buffer = new Int16Array(memory.buffer, offset, 2);
+        buffer[0] = this.x;
+        buffer[1] = this.y;
+      }
+
+      static read(offset) {
+        const buffer = new Int16Array(memory.buffer, offset, 2);
+        return new Vec2(buffer[0], buffer[1]);
+      }
+
+
+      toString() {
+        return `Vec2(x: ${this.x}, y: ${this.y})`;
+      }
+    };
+
+    class Rect {
+      constructor(low, high) {
+        this.low = low;
+        this.high = high;
+      }
+
+
+      size() {
+        return new Vec2(this.high.x - this.low.x + 1, this.high.y - this.low
+          .y + 1);
+      }
+
+      write(offset) {
+        this.low.write(offset);
+        this.high.write(offset + 4);
+      }
+
+      static read(offset) {
+        return new Rect(Vec2.read(offset), Vec2.read(offset + 4));
+      }
+
+      static get None() {
+        return new Rect(new Vec2(0, 0), new Vec2(-1, -1));
+      }
+
+      toString() {
+        const bounds = this.size();
+        return `Rect(x1: ${this.low.x}, y1: ${this.low.y}, x2: ${this.high.x}, y2: ${this.high.y}, w: ${bounds.x}, h: ${bounds.y})`;
+      }
+    };
+
+    function readStringView(offset) {
+      const buffer = new Uint32Array(memory.buffer, offset, 4);
+
+      const pointer = buffer[0];
+      const length = buffer[2];
+
+      const view = new Uint8Array(memory.buffer, pointer, length);
+      const utf8dec = new TextDecoder('utf-8');
+      const decoded = utf8dec.decode(view);
+
+      return decoded;
+    }
+
+    function readColorRGBA(offset) {
+      const buffer = new Uint8Array(memory.buffer, offset, 4);
+      return `rgba(${buffer[0]},${buffer[1]},${buffer[2]},${buffer[3]})`;
+    }
+
+    const canvas = document.getElementById('application');
+    const ctx = canvas.getContext('2d');
+
+
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let changed = true;
+
+    const importObject = {
+      env: {
+        cui_surface_changed: () => {
+          const old = !!changed;
+
+          if (old) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            ctx.font = '20px Arial';
+            ctx.fillStyle = 'black';
+            ctx.textBaseline = 'top';
+
+            console.log(`cui_surface_changed() -> true`);
+          }
+
+          changed = false;
+          return old ? 1 : 0;
+        },
+        cui_surface_begin: window => {
+          const rect = Rect.read(window);
+          console.log(`cui_surface_begin(${rect})`);
+
+          ctx.save();
+
+          const size = rect.size();
+          ctx.clearRect(rect.low.x, rect.low.y, size.x, size.y);
+        },
+        cui_surface_end: arg => {
+          console.log(`cui_surface_end`)
+
+          ctx.restore();
+        },
+        cui_surface_flush: arg => {
+          console.log(`cui_surface_flush`)
+        },
+        cui_surface_resolution: out => {
+          const resolution = new Vec2(canvas.width, canvas.height);
+          resolution.write(out);
+
+          console.log(`cui_surface_resolution() -> ${resolution}`)
+        },
+        cui_surface_view: (offset, clip) => {
+          const translation = Vec2.read(offset);
+          const clip_space = Rect.read(clip);
+
+          console.log(`cui_surface_view(${translation}, ${clip_space})`)
+
+          ctx.restore();
+          ctx.save();
+
+          // Clipping
+          const size = clip_space.size();
+          ctx.beginPath();
+          ctx.rect(clip_space.low.x, clip_space.low.y, size.x, size.y);
+          ctx.clip();
+
+          // Translation
+          ctx.translate(translation.x, translation.y);
+        },
+        cui_surface_split: (in_out, out) => {
+          const rect = Rect.read(in_out);
+          console.log(`cui_surface_split(${rect})`)
+
+          Rect.None.write(in_out);
+          rect.write(out);
+        },
+        cui_surface_draw_rect: (area, color) => {
+          const rect = Rect.read(area);
+          const style = readColorRGBA(color);
+
+          console.log(`cui_surface_draw_rect(${rect}, ${style})`)
+
+          ctx.strokeStyle = style;
+          ctx.strokeRect(rect.low.x, rect.low.y, rect.high.x, rect.high.y);
+        },
+        cui_surface_draw_text: (position, str, color) => {
+          const vec = Vec2.read(position);
+          const text = readStringView(str);
+          const style = readColorRGBA(color);
+
+          console.log(`cui_surface_draw_text(${vec}, '${text}', ${style})`)
+
+          ctx.fillStyle = style;
+          ctx.fillText(text, vec.x, vec.y);
+        },
+        cui_surface_string_bounds: (str, out) => {
+          const text = readStringView(str);
+          const metrics = ctx.measureText(text);
+
+          // https://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
+          const fontHeight = metrics.fontBoundingBoxAscent + metrics
+            .fontBoundingBoxDescent;
+          const actualHeight = metrics.actualBoundingBoxAscent + metrics
+            .actualBoundingBoxDescent;
+
+          const bounds = new Vec2(Math.ceil(metrics.width), Math.ceil(
+            actualHeight));
+
+          bounds.write(out);
+
+          console.log(`cui_surface_string_bounds('${text}') -> ${bounds}`)
+        }
+      }
+    };
+
+    WebAssembly.instantiateStreaming(fetch('index.wasm'), importObject)
+      .then(obj => {
+        if (obj.instance.exports._initialize) {
+          obj.instance.exports._initialize();
+        }
+
+        memory = obj.instance.exports.memory;
+
+        obj.instance.exports.update();
+
+        window.addEventListener('resize', () => {
+          changed = true;
+          obj.instance.exports.update();
+        });
+      })
+
+  </script>
+</body>
+
+</html>

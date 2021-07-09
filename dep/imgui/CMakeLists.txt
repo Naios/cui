@@ -1,0 +1,20 @@
+add_library(
+  imgui STATIC
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_demo.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_draw.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_tables.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/imgui_widgets.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_glfw.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/imgui/backends/imgui_impl_opengl3.cpp")
+
+target_compile_definitions(imgui PRIVATE IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
+
+target_link_libraries(
+  imgui
+  PUBLIC Threads::Threads
+  PRIVATE glfw glbinding)
+
+target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_LIST_DIR}/imgui")
+
+set_target_properties(imgui PROPERTIES FOLDER "dep")

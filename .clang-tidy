@@ -1,0 +1,21 @@
+Checks: '-*,cppcoreguidelines-*,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-macro-usage,bugprone-*,modernize-*,-modernize-use-auto,boost-*,llvm-*,misc-*,portability-*,readability-*'
+CheckOptions:
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.EnumCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+  - key:             readability-identifier-naming.MemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.UnionCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.Macro
+    value:           UPPER_CASE
+  - key:             readability-identifier-naming.IgnoreMainLikeFunctions
+    value:           1
+HeaderFilterRegex: 'include/idle/.(hpp)$'

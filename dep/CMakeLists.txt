@@ -1,0 +1,8 @@
+add_subdirectory(glbinding)
+add_subdirectory(glfw)
+add_subdirectory(imgui)
+add_subdirectory(adafruit)
+add_subdirectory(fmt)
+add_subdirectory(nativefiledialog)
+add_subdirectory(wasm3)
+add_subdirectory(catch2)

@@ -1,0 +1,67 @@
+[submodule "dep/catch2/catch2"]
+	path = dep/catch2/catch2
+	url = https://github.com/catchorg/Catch2.git
+	branch = v2.x
+[submodule "dep/glfw/glfw"]
+	path = dep/glfw/glfw
+	url = https://github.com/glfw/glfw.git
+    branch = master
+[submodule "dep/glbinding/glbinding"]
+	path = dep/glbinding/glbinding
+	url = https://github.com/cginternals/glbinding.git
+    branch = master
+[submodule "dep/imgui/imgui"]
+	path = dep/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "dep/adafruit/adafruit"]
+	path = dep/adafruit/adafruit
+	url = git@github.com:Naios/Adafruit-GFX-Library.git
+	branch = view
+[submodule "dep/imguicolortextedit/imguicolortextedit"]
+	path = dep/imguicolortextedit/imguicolortextedit
+	url = https://github.com/BalazsJako/ImGuiColorTextEdit.git
+[submodule "dep/fmt/fmt"]
+	path = dep/fmt/fmt
+	url = https://github.com/fmtlib/fmt.git
+    branch = master
+[submodule "dep/nativefiledialog/nativefiledialog"]
+	path = dep/nativefiledialog/nativefiledialog
+	url = https://github.com/mlabbe/nativefiledialog.git
+    branch = master
+[submodule "dep/wasm3/wasm3"]
+	path = dep/wasm3/wasm3
+	url = https://github.com/wasm3/wasm3.git
+    branch = master
+[submodule "submodule.dep/catch2/catch2.path"]
+	path = dep/catch2/catch2
+	url = https://github.com/catchorg/Catch2.git
+	branch = v2.x
+[submodule "submodule.dep/glfw/glfw.path"]
+	path = dep/glfw/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = master
+[submodule "submodule.dep/glbinding/glbinding.path"]
+	path = dep/glbinding/glbinding
+	url = https://github.com/cginternals/glbinding.git
+	branch = master
+[submodule "submodule.dep/imgui/imgui.path"]
+	path = dep/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "submodule.dep/adafruit/adafruit.path"]
+	path = dep/adafruit/adafruit
+	url = git@github.com:Naios/Adafruit-GFX-Library.git
+	branch = view
+[submodule "submodule.dep/imguicolortextedit/imguicolortextedit.path"]
+	path = dep/imguicolortextedit/imguicolortextedit
+	url = https://github.com/BalazsJako/ImGuiColorTextEdit.git
+	branch = master
+[submodule "submodule.dep/fmt/fmt.path"]
+	path = dep/fmt/fmt
+	url = https://github.com/fmtlib/fmt.git
+	branch = master
+[submodule "submodule.dep/nativefiledialog/nativefiledialog.path"]
+	path = dep/nativefiledialog/nativefiledialog
+	url = https://github.com/mlabbe/nativefiledialog.git
+	branch = master

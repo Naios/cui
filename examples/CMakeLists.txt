@@ -1,0 +1,6 @@
+add_subdirectory(wasm-basic)
+add_subdirectory(wasm-info)
+add_subdirectory(wasm-bitmap)
+add_subdirectory(wasm-bitmap2)
+add_subdirectory(wasm-minimal)
+add_subdirectory(wasm-buffer)
