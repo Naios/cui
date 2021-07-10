@@ -18,6 +18,8 @@
   along with this program. If not, see <https://www.gnu.org/licenses/>.
 **/
 
+#pragma once
+
 #include <cui/external/wasm3/bindings.hpp>
 #include <cui/external/wasm3/instance.hpp>
 #include <cui/external/wasm3/math.hpp>
